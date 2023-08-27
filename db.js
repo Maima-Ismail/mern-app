@@ -1,16 +1,13 @@
 const mongoose = require('mongoose')
-
-mongoose
-  .connect(
-    'mongodb+srv://maimamirza:admin@cluster0.ggjwj3g.mongodb.net/NODE-API?retryWrites=true&w=majority'
-  )
-  .then(() => {
+const db = async () => {
+  try {
+    await mongoose.connect(
+      'mongodb+srv://maimamirza:admin@cluster0.ggjwj3g.mongodb.net/NODE-API?retryWrites=true&w=majority'
+    )
     console.log('Connected to MongoDB')
-  })
-  .catch((error) => {
+  } catch (error) {
     console.log(error)
-  })
-
-const db = mongoose.connection
+  }
+}
 
 module.exports = db

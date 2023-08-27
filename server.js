@@ -145,6 +145,11 @@ app.get('*', function (_, res) {
   )
 })
 
-app.listen(port, () => {
-  console.log('Server Running')
+app.listen(port, async () => {
+  try {
+    await db()
+    console.log('Server Running')
+  } catch (error) {
+    console.log(error)
+  }
 })
