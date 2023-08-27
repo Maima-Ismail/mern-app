@@ -3,7 +3,7 @@ const session = require('express-session')
 const path = require('path')
 const cors = require('cors')
 const app = express()
-const router = require('./router')
+// const router = require('./router')
 const bcrypt = require('bcrypt')
 const db = require('./db')
 const User = require('./Models/userModel')
@@ -21,7 +21,7 @@ app.use(
 )
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
-app.use(router)
+// app.use(router)
 
 //routes student
 
