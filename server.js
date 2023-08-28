@@ -3,7 +3,7 @@ const session = require('express-session')
 const path = require('path')
 const cors = require('cors')
 const app = express()
-const router = require('./router')
+// const router = require('./router')
 const bcrypt = require('bcrypt')
 const db = require('./db')
 const User = require('./Models/userModel')
@@ -21,7 +21,7 @@ app.use(
 )
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
-app.use(router)
+// app.use('/firebase-callback', router)
 
 //routes student
 
@@ -133,6 +133,50 @@ app.post('/logout', async (req, res) => {
       res.status(200).json({ message: 'Signed out successfully' })
     }
   })
+})
+
+app.post('/firebase-callback', async (req, res) => {
+  console.log('req.body', req.body)
+  try {
+    const { uid, userName, userEmail } = req.body
+    const hashedSocialLoginPassword = await bcrypt.hash('social_login', 10)
+    const existingUser = await User.findOne({
+      $or: [{ uid }, { userEmail }],
+    })
+    if (!existingUser) {
+      console.log('user not found')
+      try {
+        let newUserEmail = userEmail // Use let instead of const
+        if (newUserEmail === null) {
+          newUserEmail = 'nothing@gmail.com'
+        }
+        const newUser = await User.create({
+          uid,
+          userEmail: newUserEmail,
+          userPassword: hashedSocialLoginPassword,
+          userName,
+        })
+        res
+          .status(200)
+          .json({ message: 'user created successfully', user: newUser })
+      } catch (error) {
+        res
+          .status(500)
+          .json({ message: 'Error creating User', error: error.message })
+      }
+    } else {
+      console.log('existing user:', existingUser)
+      existingUser.userName = userName
+      await existingUser.save()
+      res
+        .status(200)
+        .json({ message: 'data updated successfully', user: existingUser })
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: 'Error syncing user data', error: error.message })
+  }
 })
 
 app.use(express.static(path.join(__dirname, './demo-project/dist')))

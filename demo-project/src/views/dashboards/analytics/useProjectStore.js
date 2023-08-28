@@ -28,7 +28,7 @@ export const useProjectStore = defineStore("ProjectStore", {
         foundStudent.title = title;
 
         try {
-          await axios.put(`students/${student.id}`, {
+          await axios.put(`/students/${student.id}`, {
             title,
           });
         } catch (error) {
